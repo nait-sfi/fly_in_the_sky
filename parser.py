@@ -14,9 +14,10 @@ class MapParser:
     def parse_file(self, filename: str) -> bool:
         try:
             with open(filename, "r") as file:
+                line_counter = 0
                 for line_num, line in enumerate(file.readlines(), 1):
                     try:
-                        self.parse_line(line)
+                        self.parse_line(line, line_counter)
                     except Exception as e:
                         self.errors.append(f'Line {line_num}: {e}')
         except FileNotFoundError:
@@ -28,18 +29,21 @@ class MapParser:
 
         return not self.has_errors()
 
-    def parse_line(self, line: str) -> bool:
+    def parse_line(self, line: str, line_counter: int) -> bool:
         if not line.strip() or line.startswith('#'):
+            line_counter = 0
             return False
         elif line.startswith("nb_drones"):
-            return self.parse_nb_drones(line)
+            return self.parse_nb_drones(line, line_counter)
         elif line.startswith(('start_hub:', 'end_hub:', 'hub:')):
+            line_counter += 1
             return self.parse_hub(line)
         elif line.startswith('connection'):
+            line_counter += 1
             return self.parse_connection(line)
         return False
 
-    def parse_nb_drones(self, line: str) -> bool:
+    def parse_nb_drones(self, line: str, line_counter: int) -> bool:
         """
         Parse the nb_drones line to extract the number of drones.
 
@@ -64,6 +68,10 @@ class MapParser:
                     " Ignoring new value."
                 )
             return True
+        if line_counter != 0:
+            raise ValueError(
+                    "nb_drones should be at the first line"
+                    )
         try:
             value = int(content)
         except ValueError:
@@ -272,5 +280,5 @@ result = parser.parse_file("test_warnings.txt")
 print(f"Parse successful: {result}")
 print(f"Final nb_drones: {parser.nb_drones}")
 print(f"\n⚠️ Warnings: {len(parser.get_warnings())}")
-for warning in parser.get_warnings():
-    print(f"  - {warning}")
+for error in parser.get_errors():
+    print(f"  - {error}")
