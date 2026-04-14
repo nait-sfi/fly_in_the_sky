@@ -1,6 +1,10 @@
+# hello world
+# hello world
+
 nb_drones: 5
-nb_drones: 10
-nb_drones: 15
+# hello world
+
+
 start_hub: A 0 0
 end_hub: B 10 10
 connection: A-B
