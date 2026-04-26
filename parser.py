@@ -23,6 +23,12 @@ class MapParser:
         except FileNotFoundError:
             self.errors.append(f"File not found: {filename}")
             return False
+        except IsADirectoryError:
+            self.errors.append(f"[Errno 21] Is a directory: {filename}")
+            return False
+        except Exception as e:
+            self.errors.append(e.args[0])
+            return False
 
         if not self.errors:
             self.validate()
@@ -272,13 +278,3 @@ class MapParser:
     def has_warnings(self) -> bool:
         """Check if any warnings occurred"""
         return len(self.warnings) > 0
-
-
-parser = MapParser()
-result = parser.parse_file("test_warnings.txt")
-
-print(f"Parse successful: {result}")
-print(f"Final nb_drones: {parser.nb_drones}")
-print(f"\n⚠️ Warnings: {len(parser.get_warnings())}")
-for error in parser.get_errors():
-    print(f"  - {error}")
