@@ -1,8 +1,8 @@
 install: uv sync
 
-run: uv run fly.py
+run: uv run main.py
 
-debug: uv run -m pdb fly.py 
+debug: uv run -m pdb main.py 
 
 clean: rm -rf  __pycache__ .my .mypy_cache
 
