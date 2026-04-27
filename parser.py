@@ -280,3 +280,12 @@ class MapParser:
     def has_warnings(self) -> bool:
         """Check if any warnings occurred"""
         return len(self.warnings) > 0
+
+    def __str__(self) -> str:
+        return (f"drones number :{self.nb_drones} " +
+                f"start: {self.start_hub} " +
+                f"end: {self.end_hub} "
+                f"zones: {self.hubs}" +
+                f"zones: {self.hubs}" +
+                f"connections: {self.connections}"
+                )

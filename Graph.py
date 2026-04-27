@@ -7,9 +7,9 @@ from parser import MapParser
 class Graph:
     def __init__(self):
         self.zones: Dict[str, Zone] = {}
-        self.connections: List[Connection] = []  # Store all connections
-        self.start_zone: Optional[str] = None  # Store name, not object
-        self.end_zone: Optional[str] = None
+        self.connections: List[Connection] = []
+        self.start_zone: str = ""
+        self.end_zone: str = ""
 
     def add_zone(self, zone: Zone) -> None:
         """
@@ -31,8 +31,8 @@ class Graph:
             zone2_name: Name of second zone
             max_capacity: Connection capacity
         """
-        zone1: Zone = self.zones.get(zone1_name)
-        zone2: Zone = self.zones.get(zone2_name)
+        zone1: Zone | None = self.zones.get(zone1_name)
+        zone2: Zone | None = self.zones.get(zone2_name)
 
         if zone1 is None:
             raise ValueError(f"Zone '{zone1_name}' not found in graph")
@@ -136,3 +136,5 @@ class Graph:
             f"Graph({len(self.zones)} zones," +
             f" {len(self.connections)} connections)"
             )
+
+   
