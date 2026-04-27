@@ -136,5 +136,3 @@ class Graph:
             f"Graph({len(self.zones)} zones," +
             f" {len(self.connections)} connections)"
             )
-
-   

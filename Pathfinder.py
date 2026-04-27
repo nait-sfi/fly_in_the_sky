@@ -44,7 +44,7 @@ class Pathfinder:
         path = ' ==> '.join(goal_path)
         goal_distance = distances[self.end_zone]
 
-        self._print_result(goal_distance, path)
+        # self._print_result(goal_distance, path)
 
         return goal_distance, path
 
