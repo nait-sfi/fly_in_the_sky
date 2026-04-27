@@ -62,6 +62,9 @@ class Zone:
         """
         self.current_drones.discard(drone_id)
 
+    def get_movement_priority(self) -> bool:
+        return self.zone_type.is_priority
+
     def get_movement_cost(self) -> int | float:
         """
         Get the number of turns needed to reach this zone

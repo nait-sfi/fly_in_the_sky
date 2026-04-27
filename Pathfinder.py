@@ -20,11 +20,11 @@ class Pathfinder:
         paths = {name: [name] for name in self.zones.keys()}
 
         for _ in range(len(self.zones)):
-            mid_distance = INF
+            min_distance = INF
             current = None
             for name in self.zones.keys():
-                if not visited[name] and distances[name] < mid_distance:
-                    mid_distance = distances[name]
+                if not visited[name] and distances[name] < min_distance:
+                    min_distance = distances[name]
                     current = name
 
             if current is None:
@@ -34,9 +34,14 @@ class Pathfinder:
             for neighbor_zone in self.zones[current].neighbors:
                 neighbor_name = neighbor_zone.name
                 distance = neighbor_zone.get_movement_cost()
+
                 if distance != INF and not visited[neighbor_name]:
                     new_distance = distances[current] + distance
-                    if new_distance < distances[neighbor_name]:
+
+                    if (new_distance < distances[neighbor_name] or
+                        (new_distance == distances[neighbor_name] and
+                         neighbor_zone.get_movement_priority())):
+
                         distances[neighbor_name] = new_distance
                         paths[neighbor_name] = paths[current] + [neighbor_name]
 
