@@ -5,7 +5,7 @@ class ZoneType(Enum):
     NORMAL = (1, False)
     RESTRICTED = (2, False)
     PRIORITY = (1, True)
-    BLOCKER = (float('inf'), False)
+    BLOCKED = (float('inf'), False)
 
     @property
     def cost(self):

@@ -215,6 +215,7 @@ class MapParser:
             except ValueError:
                 raise ValueError("max_drones must be an integer," +
                                  f" got: {metadata['max_drones']}")
+            metadata['max_drones'] = val
         if 'max_link_capacity' in metadata:
             try:
                 val = int(metadata['max_link_capacity'])
@@ -227,6 +228,7 @@ class MapParser:
                     "max_link_capacity must be an integer, got:" +
                     f" {metadata['max_link_capacity']}"
                     )
+            metadata["max_link_capacity"] = val
         return metadata
 
     def validate(self) -> None:
