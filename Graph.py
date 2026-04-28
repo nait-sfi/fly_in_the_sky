@@ -1,13 +1,14 @@
-from typing import Dict, List, Optional
-from Zone import Zone, ZoneType
+from typing import Dict, List, Tuple, Optional
+from Zone import Zone
 from Connection import Connection
 from parser import MapParser
+from Zone import ZoneType
 
 
 class Graph:
     def __init__(self):
         self.zones: Dict[str, Zone] = {}
-        self.connections: List[Connection] = []
+        self.connections: Dict[Tuple[str, str], Connection] = {}
         self.start_zone: str = ""
         self.end_zone: str = ""
 
@@ -42,7 +43,8 @@ class Graph:
         zone1.neighbors.append(zone2)
         zone2.neighbors.append(zone1)
         conn = Connection(zone1, zone2, max_capacity)
-        self.connections.append(conn)
+        key = tuple(sorted([zone1_name, zone2_name]))
+        self.connections[key] = conn
 
     def get_neighbors(self, zone_name: str) -> List[Zone]:
         """
@@ -129,6 +131,13 @@ class Graph:
         if self.end_zone:
             return self.zones.get(self.end_zone)
         return None
+
+    def get_connection(
+        self, zone1_name: str, zone2_name: str
+         ) -> Optional[Connection]:
+        key = tuple(sorted([zone1_name, zone2_name]))
+        return self.connections.get(key)
+
 
     def __repr__(self) -> str:
         """String representation"""
