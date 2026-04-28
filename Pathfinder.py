@@ -1,6 +1,6 @@
 from Graph import Graph
 from Zone import Zone
-from typing import Optional, Dict, Tuple
+from typing import List, Optional, Dict, Tuple
 
 
 class Pathfinder:
@@ -12,7 +12,7 @@ class Pathfinder:
     def get_zone(self, name: str) -> Optional[Zone]:
         return self.zones.get(name)
 
-    def solve(self) -> Tuple[float, str]:
+    def solve(self) -> Tuple[float, List[str]]:
         INF = float('inf')
         distances = {name: INF for name in self.zones.keys()}
         distances[self.start_zone] = 0
@@ -45,13 +45,16 @@ class Pathfinder:
                         distances[neighbor_name] = new_distance
                         paths[neighbor_name] = paths[current] + [neighbor_name]
 
-        goal_path = paths.get(self.end_zone, [])
-        path = ' ==> '.join(goal_path)
-        goal_distance = distances[self.end_zone]
+        # goal_path = paths.get(self.end_zone, [])
+        # path = ' ==> '.join(goal_path)
+        # goal_distance = distances[self.end_zone]
 
         # self._print_result(goal_distance, path)
 
-        return goal_distance, path
+        goal_distance = distances[self.end_zone]
+        goal_path = paths.get(self.end_zone, [])
+
+        return goal_distance, goal_path
 
     def _print_result(self, distance: float, path: str) -> None:
         """Print pathfinding result nicely."""
