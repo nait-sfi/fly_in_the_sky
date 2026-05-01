@@ -2,6 +2,7 @@ from typing import List  # , Optional
 from Graph import Graph
 from Pathfinder import Pathfinder
 from Drone import Drone
+from Zone import Zone, ZoneType
 
 
 class Simulator:
@@ -59,22 +60,30 @@ class Simulator:
         old_zone_name = drone.current_zone
         old_zone = self.graph.get_zone(old_zone_name)
         next_zone = self.graph.get_zone(next_zone_name)
-
-        # Remove from old zone
-        old_zone.remove_drone(drone.id)
-
-        # Add to new zone
-        next_zone.add_drone(drone.id)
-
         # Update connection BEFORE drone moves (use old position!)
         connection = self.graph.get_connection(old_zone_name, next_zone_name)
-        if connection:
-            connection.current_usage += 1
 
-        # NOW update drone position
-        drone.move_to(next_zone_name)
+        if next_zone.zone_type ==ZoneType.RESTRICTED:
+            # Remove from old zone
+            old_zone.remove_drone(drone.id)
+            drone.in_transi_to = next_zone_name
+            drone.transit_turns_remaining = 1
 
-        return True
+            if connection:
+                connection.current_usage += 1
+            
+            return True
+        else:
+            old_zone.remove_drone(drone.id)
+            next_zone.add_drone(drone.id) 
+            drone.move_to(next_zone_name)
+            if connection:
+                connection.current_usage += 1
+
+            return True
+
+
+
 
     def simulate_turn(self) -> None:
         """Execute one simulation turn"""
@@ -88,6 +97,23 @@ class Simulator:
         for drone in self.drones:
             if drone.finished:
                 continue
+
+            if drone.in_transi_to is not None:
+                drone.transit_turns_remaining -= 1
+
+                if drone.transit_turns_remaining == 0:
+                    dest_zone = self.graph.get_zone(drone.in_transi_to)
+                    dest_zone.add_drone(drone.id)
+                    drone.move_to(drone.in_transi_to)
+
+                    moves.append(f"D{drone.id}->{drone.current_zone}")
+
+                    drone.in_transi_to = None
+                    drone.transit_turns_remaining = 0
+                else:
+                    moves.append(f"D{drone.id}->{drone.in_transi_to}transit")
+                continue
+
 
             next_zone = drone.get_next_zone()
             if next_zone is None:

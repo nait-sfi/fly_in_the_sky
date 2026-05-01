@@ -8,6 +8,8 @@ class Drone:
         self.assigned_path = path
         self.path_index = 0
         self.finished = False
+        self.in_transi_to: Optional[str] = None
+        self.transit_turns_remaining: int = 0
 
     def get_next_zone(self) -> Optional[str]:
         """Get next zone in assigned path"""
@@ -31,4 +33,4 @@ class Drone:
 
     def is_at_goal(self) -> bool:
         """Check if drone reached destination"""
-        return self.current_zone == self.assigned_path[self.path_index]
+        return self.current_zone == self.assigned_path[-1]
