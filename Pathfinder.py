@@ -1,26 +1,40 @@
+"""Shortest path solver for the zone graph."""
+
 from Graph import Graph
+from typing import Dict
 from Zone import Zone
-from typing import List, Optional, Dict, Tuple
 
 
 class Pathfinder:
+    """Compute delivery routes on top of a graph."""
+
     def __init__(self, graph: Graph) -> None:
+        """
+        Initialize the pathfinder from a graph.
+
+        Args:
+            graph: Graph containing zones and connection metadata.
+        """
         self.zones: Dict[str, Zone] = graph.zones
         self.start_zone: str = graph.start_zone
         self.end_zone: str = graph.end_zone
 
-    def get_zone(self, name: str) -> Optional[Zone]:
-        return self.zones.get(name)
+    def solve(self) -> tuple[float, list[str]]:
+        """
+        Compute the shortest path from start zone to end zone.
 
-    def solve(self) -> Tuple[float, List[str]]:
-        INF = float('inf')
-        distances = {name: INF for name in self.zones.keys()}
+        Returns:
+            A tuple ``(distance, path)`` where distance is the movement cost
+            and path is the ordered list of zone names.
+        """
+        inf_cost = float("inf")
+        distances = {name: inf_cost for name in self.zones.keys()}
         distances[self.start_zone] = 0
         visited = {name: False for name in self.zones.keys()}
         paths = {name: [name] for name in self.zones.keys()}
 
         for _ in range(len(self.zones)):
-            min_distance = INF
+            min_distance = inf_cost
             current = None
             for name in self.zones.keys():
                 if not visited[name] and distances[name] < min_distance:
@@ -35,7 +49,7 @@ class Pathfinder:
                 neighbor_name = neighbor_zone.name
                 distance = neighbor_zone.get_movement_cost()
 
-                if distance != INF and not visited[neighbor_name]:
+                if distance != inf_cost and not visited[neighbor_name]:
                     new_distance = distances[current] + distance
 
                     if (new_distance < distances[neighbor_name] or
@@ -45,24 +59,7 @@ class Pathfinder:
                         distances[neighbor_name] = new_distance
                         paths[neighbor_name] = paths[current] + [neighbor_name]
 
-        # goal_path = paths.get(self.end_zone, [])
-        # path = ' ==> '.join(goal_path)
-        # goal_distance = distances[self.end_zone]
-
-        # self._print_result(goal_distance, path)
-
         goal_distance = distances[self.end_zone]
         goal_path = paths.get(self.end_zone, [])
 
         return goal_distance, goal_path
-
-    def _print_result(self, distance: float, path: str) -> None:
-        """Print pathfinding result nicely."""
-        print(f"\n{'='*50}")
-        print("Pathfinding Result")
-        print(f"{'='*50}")
-        print(f"From:     {self.start_zone}")
-        print(f"To:       {self.end_zone}")
-        print(f"Distance: {distance} turns")
-        print(f"Path:     {path}")
-        print(f"{'='*50}\n")

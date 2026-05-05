@@ -1,38 +1,27 @@
-from parser import MapParser
+"""Entrypoint for running pathfinding on a sample map."""
+
 from Graph import Graph
 from Pathfinder import Pathfinder
+from parser import MapParser
 
-# Parse
-parser = MapParser()
-success = parser.parse_file("./maps/medium/01_dead_end_trap.txt")
 
-# print("=== PARSER DEBUG ===")
-# print(f"Parse successful: {success}")
-# print(f"Errors: {parser.get_errors()}")
-# print(f"nb_drones: {parser.nb_drones}")
-# print(f"start_hub: {parser.start_hub}")
-# print(f"end_hub: {parser.end_hub}")
-# print(f"hubs: {list(parser.hubs.keys())}")
-# print(f"connections: {len(parser.connections)}")
+def main() -> None:
+    """
+    Parse a sample map and solve the route once.
 
-# Build graph
-graph = Graph()
-graph.build_from_parser(parser)
+    Raises:
+        RuntimeError: If map parsing fails.
+    """
+    parser = MapParser()
+    if not parser.parse_file("./maps/medium/01_dead_end_trap.txt"):
+        raise RuntimeError("\n".join(parser.get_errors()))
 
-# print("\n=== GRAPH DEBUG ===")
-# # print(f"Graph: {graph}")
-# # print(f"Graph zones: {list(graph.zones.keys())}")
-# # print(f"Graph start_zone: {graph.start_zone}")
-# # print(f"Graph end_zone: {graph.end_zone}")
+    graph = Graph()
+    graph.build_from_parser(parser)
 
-# # Create pathfinder
-# print("\n=== PATHFINDER DEBUG ===")
-pathfinder = Pathfinder(graph)
-# print(f"Pathfinder start_zone: {pathfinder.start_zone}")
-# print(f"Pathfinder end_zone: {pathfinder.end_zone}")
-# print(f"Pathfinder zones: {list(pathfinder.zones.keys())}")
+    pathfinder = Pathfinder(graph)
+    pathfinder.solve()
 
-# Solve
-distance, path = pathfinder.solve()
-# print(f"\nDistance: {distance}")
-# print(f"Path: {path}")
+
+if __name__ == "__main__":
+    main()

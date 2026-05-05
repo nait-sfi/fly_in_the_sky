@@ -1,15 +1,19 @@
+"""Connection model between two zones."""
+
 from Zone import Zone
 
 
 class Connection:
+    """Represents a bidirectional edge between two zones."""
+
     def __init__(self, zone1: Zone, zone2: Zone, max_capacity: int = 1):
         """
-        Create a bidirectional connection between two zones
+        Initialize a connection between two zones.
 
         Args:
-            zone1: First zone
-            zone2: Second zone
-            max_capacity: How many drones can use this path per turn
+            zone1: First zone.
+            zone2: Second zone.
+            max_capacity: Number of drones that can traverse per turn.
         """
         self.zone1 = zone1
         self.zone2 = zone2
@@ -19,29 +23,23 @@ class Connection:
 
     def can_traverse(self) -> bool:
         """
-        Check if this connection has capacity
+        Check whether this connection has remaining capacity.
 
         Returns:
-            True if drones can use it, False if at max capacity
+            True if a drone can traverse this turn, else False.
         """
         return self.max_capacity > self.current_usage
 
     def get_other_zone(self, current_zone: Zone) -> Zone | None:
         """
-        Given one end of the connection, get the other end
+        Return the opposite endpoint from the given zone.
 
         Args:
-            current_zone: The zone you're currently at
+            current_zone: Zone at one end of the connection.
 
         Returns:
-            The zone on the other end
-            or None
-
-        Example:
-            connection between A and B
-            get_other_zone(A) returns B
-            get_other_zone(B) returns A
-            get_other_zone(X) returns None
+            The other zone if ``current_zone`` belongs to this connection,
+            otherwise ``None``.
         """
         if current_zone == self.zone1:
             return self.zone2
@@ -51,8 +49,8 @@ class Connection:
             return None
 
     def __repr__(self) -> str:
-        """String representation"""
+        """Return a debug-friendly string representation."""
         return (
             f"Connection({self.zone1.name}↔{self.zone2.name}," +
-            " capacity={self.max_capacity})"
+            f" capacity={self.max_capacity})"
         )
