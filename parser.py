@@ -11,10 +11,16 @@ class MapParser:
         self.nb_drones: int | None = None
         self.hubs: dict[str, dict[str, Any]] = {}
         self.connections: list[dict[str, Any]] = []
+        self._seen_connections: set[tuple[str, str]] = set()
         self.start_hub: str = ""
         self.end_hub: str = ""
         self.errors: list[str] = []
         self.warnings: list[str] = []
+
+    @staticmethod
+    def _strip_comments(line: str) -> str:
+        """Strip inline comments and surrounding whitespace from a line."""
+        return line.split("#", 1)[0].strip()
 
     def parse_file(self, filename: str) -> bool:
         """
@@ -27,12 +33,26 @@ class MapParser:
             True when parsing and validation complete without errors.
         """
         try:
+            first_content_seen = False
             with open(filename, "r", encoding="utf-8") as file:
-                for line_num, line in enumerate(file.readlines(), 1):
+                for line_num, line in enumerate(file, 1):
+                    stripped = self._strip_comments(line)
+                    if not stripped:
+                        continue
+
+                    if not first_content_seen:
+                        first_content_seen = True
+                        if not stripped.startswith("nb_drones:"):
+                            self.errors.append(
+                                f"Line {line_num}: First non-comment line must be "
+                                "nb_drones: <positive_integer>"
+                            )
+                            return False
                     try:
-                        self.parse_line(line)
+                        self.parse_line(stripped)
                     except Exception as exc:
                         self.errors.append(f"Line {line_num}: {exc}")
+                        return False
         except FileNotFoundError:
             self.errors.append(f"File not found: {filename}")
             return False
@@ -57,16 +77,16 @@ class MapParser:
         Returns:
             True if the line contains parsed content, otherwise False.
         """
-        stripped = line.split("#", 1)[0].strip()
+        stripped = self._strip_comments(line)
         if not stripped or stripped.startswith("#"):
             return False
-        if stripped.startswith("nb_drones"):
+        if stripped.startswith("nb_drones:"):
             return self.parse_nb_drones(stripped)
         if stripped.startswith(("start_hub:", "end_hub:", "hub:")):
             return self.parse_hub(stripped)
-        if stripped.startswith("connection"):
+        if stripped.startswith("connection:"):
             return self.parse_connection(stripped)
-        return False
+        raise ValueError(f"Unknown line format: {stripped}")
 
     def parse_nb_drones(self, line: str) -> bool:
         """
@@ -88,11 +108,7 @@ class MapParser:
         content = content.strip()
 
         if self.nb_drones is not None:
-            self.warnings.append(
-                f"Warning: nb_drones already defined as {self.nb_drones}"
-                " Ignoring new value."
-            )
-            return True
+            raise ValueError("Duplicate nb_drones declaration")
 
         try:
             value = int(content)
@@ -198,6 +214,16 @@ class MapParser:
 
         zone1 = zones[0].strip()
         zone2 = zones[1].strip()
+        if zone1 not in self.hubs or zone2 not in self.hubs:
+            raise ValueError(
+                "Connections must link previously defined zones:"
+                f" {zone1}-{zone2}"
+            )
+
+        pair = tuple(sorted((zone1, zone2)))
+        if pair in self._seen_connections:
+            raise ValueError(f"Duplicate connection: {zone1}-{zone2}")
+        self._seen_connections.add(pair)
 
         metadata = self.extract_metadata(content)
         metadata["max_link_capacity"] = metadata.get("max_link_capacity", 1)

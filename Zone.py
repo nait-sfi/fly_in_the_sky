@@ -53,7 +53,7 @@ class Zone:
         self.neighbors: list[Zone] = []
         self.color = color
         self.current_drones: set[int] = set()
-        self.passing_cost: float = 0
+        self.additional_cost = 0.0
 
     def can_accept_drone(self) -> bool:
         """
@@ -99,7 +99,7 @@ class Zone:
         Returns:
             Base zone type cost plus dynamic passing cost.
         """
-        return self.zone_type.cost + self.passing_cost
+        return self.zone_type.cost + self.additional_cost
 
     def __repr__(self) -> str:
         """Return a debug-friendly string representation."""

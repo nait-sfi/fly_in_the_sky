@@ -20,6 +20,8 @@ class Drone:
         self.finished = False
         self.in_transi_to: str | None = None
         self.transit_turns_remaining: int = 0
+        self.transit_connection_name: str | None = None
+        self.transit_connection_key: tuple[str, str] | None = None
 
     def get_next_zone(self) -> str | None:
         """

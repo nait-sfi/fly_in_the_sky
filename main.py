@@ -3,6 +3,7 @@
 from Graph import Graph
 from Pathfinder import Pathfinder
 from parser import MapParser
+from Simulator import Simulator
 
 
 def main() -> None:
@@ -13,14 +14,18 @@ def main() -> None:
         RuntimeError: If map parsing fails.
     """
     parser = MapParser()
-    if not parser.parse_file("./maps/medium/01_dead_end_trap.txt"):
+    if not parser.parse_file("./maps/challenger/01_the_impossible_dream.txt"):
         raise RuntimeError("\n".join(parser.get_errors()))
 
     graph = Graph()
     graph.build_from_parser(parser)
 
     pathfinder = Pathfinder(graph)
-    pathfinder.solve()
+    simulation = Simulator(graph, parser.nb_drones, pathfinder)
+    simulation.run()
+    print(len(simulation.output))
+    # for input in simulation.output:
+    #     print(input)
 
 
 if __name__ == "__main__":
