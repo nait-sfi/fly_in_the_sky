@@ -19,12 +19,27 @@ class MapParser:
 
     @staticmethod
     def _connection_key(zone1: str, zone2: str) -> tuple[str, str]:
-        """Create a normalized key for duplicate connection checks."""
+        """Create a normalized key for duplicate connection checks.
+
+        Args:
+            zone1 (str): The name of the first zone
+            zone2 (str): The name of the second zone
+
+        Returns:
+            tuple[str, str]: A tuple of tow zone names normalized
+        """
         return (zone1, zone2) if zone1 <= zone2 else (zone2, zone1)
 
     @staticmethod
     def _strip_comments(line: str) -> str:
-        """Strip inline comments and surrounding whitespace from a line."""
+        """Strip inline comments and surrounding whitespace from a line.
+        
+        Args:
+            line: A string
+
+        Returns:
+            striped line with no comment
+        """
         return line.split("#", 1)[0].strip()
 
     def parse_file(self, filename: str) -> bool:

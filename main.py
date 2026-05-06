@@ -14,7 +14,7 @@ def main() -> None:
         RuntimeError: If map parsing fails.
     """
     parser = MapParser()
-    if not parser.parse_file("./maps/challenger/01_the_impossible_dream.txt"):
+    if not parser.parse_file("./maps/hard/01_maze_nightmare.txt"):
         raise RuntimeError("\n".join(parser.get_errors()))
 
     graph = Graph()
@@ -25,9 +25,9 @@ def main() -> None:
         raise RuntimeError("nb_drones was not set after parsing")
     simulation = Simulator(graph, parser.nb_drones, pathfinder)
     simulation.run()
-    # print(len(simulation.output))
-    for input in simulation.output:
-        print(input)
+    print(len(simulation.output))
+    # for input in simulation.output:
+    #     print(input)
 
 
 if __name__ == "__main__":

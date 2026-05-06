@@ -3,6 +3,7 @@
 from Graph import Graph
 from typing import Dict
 from Zone import Zone
+import heapq
 
 
 class Pathfinder:
@@ -27,39 +28,33 @@ class Pathfinder:
             A tuple ``(distance, path)`` where distance is the movement cost
             and path is the ordered list of zone names.
         """
-        inf_cost = float("inf")
-        distances = {name: inf_cost for name in self.zones.keys()}
+
+        inf_cost = float('inf')
+        distances = {name: inf_cost for name in self.zones}
+        visited = set()
+        paths = {name: [name] for name in self.zones}
+
+        heap = []
+        heapq.heappush(heap, (0, self.start_zone))
         distances[self.start_zone] = 0
-        visited = {name: False for name in self.zones.keys()}
-        paths = {name: [name] for name in self.zones.keys()}
+        while heap:
+            _, node = heapq.heappop(heap)
+            if node in visited:
+                continue
+            visited.add(node)
 
-        for _ in range(len(self.zones)):
-            min_distance = inf_cost
-            current = None
-            for name in self.zones.keys():
-                if not visited[name] and distances[name] < min_distance:
-                    min_distance = distances[name]
-                    current = name
+            for neighbor in self.zones[node].neighbors:
+                if neighbor.name in visited:
+                    continue
 
-            if current is None:
-                break
-            visited[current] = True
+                neighbor_distance = neighbor.get_movement_cost()
+                new_distance = neighbor_distance + distances[node]
 
-            for neighbor_zone in self.zones[current].neighbors:
-                neighbor_name = neighbor_zone.name
-                distance = neighbor_zone.get_movement_cost()
+                if (new_distance < distances[neighbor.name] or
+                            (new_distance == distances[neighbor.name] and
+                             neighbor.get_movement_priority())):
+                    distances[neighbor.name] = new_distance
+                    paths[neighbor.name] = paths[node] + [neighbor.name]
+                    heapq.heappush(heap, (distances[neighbor.name], neighbor.name))
 
-                if distance != inf_cost and not visited[neighbor_name]:
-                    new_distance = distances[current] + distance
-
-                    if (new_distance < distances[neighbor_name] or
-                        (new_distance == distances[neighbor_name] and
-                         neighbor_zone.get_movement_priority())):
-
-                        distances[neighbor_name] = new_distance
-                        paths[neighbor_name] = paths[current] + [neighbor_name]
-
-        goal_distance = distances[self.end_zone]
-        goal_path = paths.get(self.end_zone, [])
-
-        return goal_distance, goal_path
+        return distances[self.end_zone], paths.get(self.end_zone, [])

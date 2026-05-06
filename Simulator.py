@@ -221,7 +221,7 @@ class Simulator:
         """
         while not all(drone.finished for drone in self.drones):
             if self.turn >= max_turns:
-                print(f"❌ ERROR: Simulation exceeded {max_turns} turns!")
+                print(f" ERROR: Simulation exceeded {max_turns} turns!")
                 print(
                     "Drones finished:" +
                     f" {sum(1 for drone in self.drones if drone.finished)}/"

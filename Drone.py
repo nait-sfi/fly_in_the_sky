@@ -50,7 +50,11 @@ class Drone:
             self.finished = True
 
     def __repr__(self) -> str:
-        """Return a debug-friendly string representation."""
+        """Return a debug-friendly string representation.
+
+        Returns:
+            str: Representation string for debuging
+        """
         return (
             f"Drone(D{self.id},"
             + f" at={self.current_zone}, path_idx={self.path_index})"

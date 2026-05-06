@@ -49,7 +49,11 @@ class Connection:
             return None
 
     def __repr__(self) -> str:
-        """Return a debug-friendly string representation."""
+        """Return a debug-friendly string representation.
+
+        Returns:
+            str: Representation string for debuging
+        """
         return (
             f"Connection({self.zone1.name}↔{self.zone2.name}," +
             f" capacity={self.max_capacity})"

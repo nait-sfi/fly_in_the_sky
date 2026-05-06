@@ -190,7 +190,12 @@ class Graph:
         return self.connections.get(key)
 
     def __repr__(self) -> str:
-        """Return a debug-friendly string representation."""
+        
+        """Return a debug-friendly string representation.
+
+        Returns:
+            str: Representation string for debuging
+        """
         return (
             f"Graph({len(self.zones)} zones," +
             f" {len(self.connections)} connections)"
