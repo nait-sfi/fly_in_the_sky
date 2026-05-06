@@ -1,11 +1,21 @@
-install: uv sync
+.PHONY: install run debug clean lint lint-strict
 
-run: uv run main.py
+install:
+	uv sync --all-groups
 
-debug: uv run -m pdb main.py 
+run:
+	uv run python main.py
 
-clean: rm -rf  __pycache__ .my .mypy_cache
+debug:
+	uv run python -m pdb main.py
 
-lint: flake8 . && mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+clean:
+	rm -rf __pycache__ .mypy_cache .pytest_cache
 
-lint-strict: flake8 . & mypy . --strict
+lint:
+	uv run flake8 .
+	uv run mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+
+lint-strict:
+	uv run flake8 .
+	uv run mypy . --strict

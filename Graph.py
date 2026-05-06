@@ -54,8 +54,17 @@ class Graph:
         zone1.neighbors.append(zone2)
         zone2.neighbors.append(zone1)
         conn = Connection(zone1, zone2, max_capacity)
-        key = tuple(sorted((zone1_name, zone2_name)))
+        key = self._connection_key(zone1_name, zone2_name)
         self.connections[key] = conn
+
+    @staticmethod
+    def _connection_key(zone1_name: str, zone2_name: str) -> tuple[str, str]:
+        """Create a normalized key for a bidirectional connection."""
+        return (
+            (zone1_name, zone2_name)
+            if zone1_name <= zone2_name
+            else (zone2_name, zone1_name)
+        )
 
     def get_neighbors(self, zone_name: str) -> list[Zone]:
         """
@@ -177,9 +186,8 @@ class Graph:
         Returns:
             The connection object or ``None``.
         """
-        key = tuple(sorted((zone1_name, zone2_name)))
+        key = self._connection_key(zone1_name, zone2_name)
         return self.connections.get(key)
-
 
     def __repr__(self) -> str:
         """Return a debug-friendly string representation."""

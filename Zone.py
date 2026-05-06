@@ -11,15 +11,20 @@ class ZoneType(Enum):
     PRIORITY = (1, True)
     BLOCKED = (float('inf'), False)
 
+    def __init__(self, cost: float, is_priority: bool) -> None:
+        """Store typed attributes for enum values."""
+        self._cost = cost
+        self._is_priority = is_priority
+
     @property
     def cost(self) -> int | float:
         """Return the movement cost for the zone type."""
-        return self.value[0]
+        return self._cost
 
     @property
     def is_priority(self) -> bool:
         """Return whether this type has tie-break priority."""
-        return self.value[1]
+        return self._is_priority
 
 
 class Zone:

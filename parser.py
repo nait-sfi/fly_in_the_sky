@@ -18,6 +18,11 @@ class MapParser:
         self.warnings: list[str] = []
 
     @staticmethod
+    def _connection_key(zone1: str, zone2: str) -> tuple[str, str]:
+        """Create a normalized key for duplicate connection checks."""
+        return (zone1, zone2) if zone1 <= zone2 else (zone2, zone1)
+
+    @staticmethod
     def _strip_comments(line: str) -> str:
         """Strip inline comments and surrounding whitespace from a line."""
         return line.split("#", 1)[0].strip()
@@ -220,7 +225,7 @@ class MapParser:
                 f" {zone1}-{zone2}"
             )
 
-        pair = tuple(sorted((zone1, zone2)))
+        pair = self._connection_key(zone1, zone2)
         if pair in self._seen_connections:
             raise ValueError(f"Duplicate connection: {zone1}-{zone2}")
         self._seen_connections.add(pair)
@@ -312,7 +317,7 @@ class MapParser:
             if zone2 not in self.hubs:
                 self.errors.append(f"Connection references unknown zone: {zone2}")
 
-            pair = tuple(sorted((zone1, zone2)))
+            pair = self._connection_key(zone1, zone2)
             if pair in seen_connections:
                 self.errors.append(f"Duplicate connection: {zone1}-{zone2}")
             seen_connections.add(pair)

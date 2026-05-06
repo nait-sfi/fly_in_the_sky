@@ -29,6 +29,15 @@ class Simulator:
         self._create_drones()
         self._assign_paths()
 
+    @staticmethod
+    def _connection_key(zone1_name: str, zone2_name: str) -> tuple[str, str]:
+        """Create a normalized key for a bidirectional connection."""
+        return (
+            (zone1_name, zone2_name)
+            if zone1_name <= zone2_name
+            else (zone2_name, zone1_name)
+        )
+
     def _create_drones(self) -> None:
         """Create all drones at the start position."""
         start_zone = self.graph.get_zone(self.graph.start_zone)
@@ -48,9 +57,8 @@ class Simulator:
             _, path = self.pathfinder.solve()
             pathlen = len(path)
             for zone_name in path:
-                self.graph.zones[zone_name].additional_cost += (0.2 / pathlen)
+                self.graph.zones[zone_name].additional_cost += (0.1 / pathlen)
             drone.assigned_path = path
-
 
     def can_drone_move(self, drone: Drone, next_zone_name: str) -> bool:
         """
@@ -107,7 +115,9 @@ class Simulator:
             drone.in_transi_to = next_zone_name
             drone.transit_turns_remaining = 1
             drone.transit_connection_name = f"{old_zone_name}-{next_zone_name}"
-            drone.transit_connection_key = tuple(sorted((old_zone_name, next_zone_name)))
+            drone.transit_connection_key = self._connection_key(
+                old_zone_name, next_zone_name
+            )
             if not self._is_special_unbounded_zone(next_zone_name):
                 self.transit_reservations[next_zone_name] = (
                     self.transit_reservations.get(next_zone_name, 0) + 1
@@ -124,15 +134,17 @@ class Simulator:
 
     def simulate_turn(self) -> None:
         """Execute one simulation turn."""
-        for connection in self.graph.connections.values():
-            connection.current_usage = 0
+        for graph_connection in self.graph.connections.values():
+            graph_connection.current_usage = 0
 
         for drone in self.drones:
             if drone.in_transi_to is None or drone.transit_connection_key is None:
                 continue
-            connection = self.graph.connections.get(drone.transit_connection_key)
-            if connection is not None:
-                connection.current_usage += 1
+            transit_connection = self.graph.connections.get(
+                drone.transit_connection_key
+            )
+            if transit_connection is not None:
+                transit_connection.current_usage += 1
 
         moves: list[str] = []
         for drone in self.drones:

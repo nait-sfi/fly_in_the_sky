@@ -21,11 +21,13 @@ def main() -> None:
     graph.build_from_parser(parser)
 
     pathfinder = Pathfinder(graph)
+    if parser.nb_drones is None:
+        raise RuntimeError("nb_drones was not set after parsing")
     simulation = Simulator(graph, parser.nb_drones, pathfinder)
     simulation.run()
-    print(len(simulation.output))
-    # for input in simulation.output:
-    #     print(input)
+    # print(len(simulation.output))
+    for input in simulation.output:
+        print(input)
 
 
 if __name__ == "__main__":
