@@ -33,7 +33,6 @@ class MapParser:
     @staticmethod
     def _strip_comments(line: str) -> str:
         """Strip inline comments and surrounding whitespace from a line.
-        
         Args:
             line: A string
 
