@@ -34,7 +34,7 @@ class Pathfinder:
         visited = set()
         paths = {name: [name] for name in self.zones}
 
-        heap = []
+        heap: list[tuple[float, str]] = []
         heapq.heappush(heap, (0, self.start_zone))
         distances[self.start_zone] = 0
         while heap:
@@ -51,10 +51,13 @@ class Pathfinder:
                 new_distance = neighbor_distance + distances[node]
 
                 if (new_distance < distances[neighbor.name] or
-                            (new_distance == distances[neighbor.name] and
-                             neighbor.get_movement_priority())):
+                    (new_distance == distances[neighbor.name] and
+                     neighbor.get_movement_priority())):
+
                     distances[neighbor.name] = new_distance
                     paths[neighbor.name] = paths[node] + [neighbor.name]
-                    heapq.heappush(heap, (distances[neighbor.name], neighbor.name))
+                    heapq.heappush(
+                        heap, (distances[neighbor.name], neighbor.name)
+                        )
 
         return distances[self.end_zone], paths.get(self.end_zone, [])
