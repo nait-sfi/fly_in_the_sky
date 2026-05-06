@@ -9,7 +9,9 @@ from Zone import ZoneType
 class Simulator:
     """Simulates multi-drone delivery."""
 
-    def __init__(self, graph: Graph, num_drones: int, pathfinder: Pathfinder) -> None:
+    def __init__(
+        self, graph: Graph, num_drones: int, pathfinder: Pathfinder
+         ) -> None:
         """
         Initialize a simulator.
 
@@ -75,7 +77,9 @@ class Simulator:
         if next_zone is None:
             return False
 
-        connection = self.graph.get_connection(drone.current_zone, next_zone_name)
+        connection = self.graph.get_connection(
+            drone.current_zone, next_zone_name
+            )
         if connection is None or not connection.can_traverse():
             return False
 
@@ -138,7 +142,8 @@ class Simulator:
             graph_connection.current_usage = 0
 
         for drone in self.drones:
-            if drone.in_transi_to is None or drone.transit_connection_key is None:
+            dron_is_none = drone.in_transi_to is None
+            if dron_is_none or drone.transit_connection_key is None:
                 continue
             transit_connection = self.graph.connections.get(
                 drone.transit_connection_key
@@ -155,21 +160,32 @@ class Simulator:
                 drone.transit_turns_remaining -= 1
                 if drone.transit_turns_remaining == 0:
                     destination_zone_name = drone.in_transi_to
-                    destination_zone = self.graph.get_zone(destination_zone_name)
+                    destination_zone = self.graph.get_zone(
+                        destination_zone_name
+                        )
                     if destination_zone is None:
                         raise RuntimeError(
-                            f"Drone D{drone.id} has invalid transit destination"
+                            f"Drone D{drone.id}" +
+                            " has invalid transit destination"
                         )
-                    if not self._is_special_unbounded_zone(destination_zone_name):
-                        reservation = self.transit_reservations.get(destination_zone_name, 0)
+                    if not self._is_special_unbounded_zone(
+                        destination_zone_name
+                         ):
+                        reservation = self.transit_reservations.get(
+                            destination_zone_name, 0
+                             )
                         if reservation <= 0:
                             raise RuntimeError(
-                                "Missing reservation for restricted transit to "
-                                f"{destination_zone_name}"
+                                "Missing reservation for restricted transit to"
+                                f" {destination_zone_name}"
                             )
-                        self.transit_reservations[destination_zone_name] = reservation - 1
-                        if self.transit_reservations[destination_zone_name] == 0:
-                            del self.transit_reservations[destination_zone_name]
+                        self.transit_reservations[destination_zone_name] = \
+                            reservation - 1
+                        if self.transit_reservations[
+                            destination_zone_name
+                             ] == 0:
+                            del self.transit_reservations[
+                                destination_zone_name]
 
                     destination_zone.current_drones.add(drone.id)
                     drone.move_to(destination_zone_name)
@@ -207,7 +223,8 @@ class Simulator:
             if self.turn >= max_turns:
                 print(f"❌ ERROR: Simulation exceeded {max_turns} turns!")
                 print(
-                    f"Drones finished: {sum(1 for drone in self.drones if drone.finished)}/"
+                    "Drones finished:" +
+                    f" {sum(1 for drone in self.drones if drone.finished)}/"
                     f"{len(self.drones)}"
                 )
                 break

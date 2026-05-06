@@ -49,7 +49,8 @@ class MapParser:
                         first_content_seen = True
                         if not stripped.startswith("nb_drones:"):
                             self.errors.append(
-                                f"Line {line_num}: First non-comment line must be "
+                                f"Line {line_num}:" +
+                                " First non-comment line must be "
                                 "nb_drones: <positive_integer>"
                             )
                             return False
@@ -118,10 +119,12 @@ class MapParser:
         try:
             value = int(content)
         except ValueError as exc:
-            raise ValueError(f"Expected number drones to be an int: {content}") from exc
+            raise ValueError(
+                f"Expected number drones to be an int: {content}") from exc
 
         if value <= 0:
-            raise ValueError(f"nb_drones must be a positive integer, got: {value}")
+            raise ValueError(
+                f"nb_drones must be a positive integer, got: {value}")
 
         self.nb_drones = value
         return True
@@ -151,7 +154,8 @@ class MapParser:
 
         name = parts[0]
         if "-" in name or " " in name:
-            raise ValueError(f"Zone names cannot contain dashes or spaces: '{name}'")
+            raise ValueError(
+                f"Zone names cannot contain dashes or spaces: '{name}'")
         if name in self.hubs:
             raise ValueError(f"Duplicate hub name: '{name}' already defined")
 
@@ -169,7 +173,8 @@ class MapParser:
         valid_types = ["normal", "blocked", "restricted", "priority"]
         if zone_type not in valid_types:
             raise ValueError(
-                f"Invalid zone type: '{zone_type}'. Must be one of: {', '.join(valid_types)}"
+                "Invalid zone type: " +
+                f"'{zone_type}'. Must be one of: {', '.join(valid_types)}"
             )
 
         metadata["zone"] = zone_type
@@ -177,13 +182,15 @@ class MapParser:
             case "start_hub":
                 if self.start_hub:
                     raise ValueError(
-                        f"Duplicate start_hub declaration: '{self.start_hub}' and '{name}'"
+                        "Duplicate start_hub declaration: " +
+                        f"'{self.start_hub}' and '{name}'"
                     )
                 self.start_hub = name
             case "end_hub":
                 if self.end_hub:
                     raise ValueError(
-                        f"Duplicate end_hub declaration: '{self.end_hub}' and '{name}'"
+                        "Duplicate end_hub declaration: " +
+                        f"'{self.end_hub}' and '{name}'"
                     )
                 self.end_hub = name
 
@@ -209,7 +216,8 @@ class MapParser:
         _, content = line.split(":", 1)
         content = content.strip()
 
-        zones_part = content[:content.index("[")].strip() if "[" in content else content
+        zones_part = content[:content.index("[")].strip() if "[" in content\
+            else content
         if "-" not in zones_part:
             raise ValueError(f"Connection needs two zones with -: {line}")
 
@@ -232,7 +240,9 @@ class MapParser:
 
         metadata = self.extract_metadata(content)
         metadata["max_link_capacity"] = metadata.get("max_link_capacity", 1)
-        self.connections.append({"zone1": zone1, "zone2": zone2, "metadata": metadata})
+        self.connections.append(
+            {"zone1": zone1, "zone2": zone2, "metadata": metadata}
+            )
         return True
 
     def extract_metadata(self, text: str) -> dict[str, Any]:
@@ -253,7 +263,7 @@ class MapParser:
 
         start = text.index("[")
         end = text.index("]")
-        metadata_str = text[start + 1 : end].strip()
+        metadata_str = text[start + 1:end].strip()
         if not metadata_str:
             return {}
 
@@ -262,12 +272,14 @@ class MapParser:
         for item in items:
             if "=" not in item:
                 raise ValueError(
-                    f"Invalid metadata item '{item}'. Expected key=value format"
+                    f"Invalid metadata item '{item}'." +
+                    " Expected key=value format"
                 )
             key, value = item.split("=", 1)
             if not key or not value:
                 raise ValueError(
-                    f"Invalid metadata item '{item}'. Expected key=value format"
+                    f"Invalid metadata item '{item}'." +
+                    " Expected key=value format"
                 )
             metadata[key] = value
 
@@ -275,10 +287,13 @@ class MapParser:
             try:
                 val = int(metadata["max_drones"])
                 if val <= 0:
-                    raise ValueError(f"max_drones must be positive, got: {val}")
+                    raise ValueError(
+                        f"max_drones must be positive, got: {val}"
+                        )
             except ValueError as exc:
                 raise ValueError(
-                    f"max_drones must be an integer, got: {metadata['max_drones']}"
+                    "max_drones must be an integer, got: " +
+                    f"{metadata['max_drones']}"
                 ) from exc
             metadata["max_drones"] = val
 
@@ -286,7 +301,9 @@ class MapParser:
             try:
                 val = int(metadata["max_link_capacity"])
                 if val <= 0:
-                    raise ValueError(f"max_link_capacity must be positive, got: {val}")
+                    raise ValueError(
+                        f"max_link_capacity must be positive, got: {val}"
+                        )
             except ValueError as exc:
                 raise ValueError(
                     "max_link_capacity must be an integer, got:"
@@ -313,9 +330,13 @@ class MapParser:
         for conn in self.connections:
             zone1, zone2 = conn["zone1"], conn["zone2"]
             if zone1 not in self.hubs:
-                self.errors.append(f"Connection references unknown zone: {zone1}")
+                self.errors.append(
+                    f"Connection references unknown zone: {zone1}"
+                    )
             if zone2 not in self.hubs:
-                self.errors.append(f"Connection references unknown zone: {zone2}")
+                self.errors.append(
+                    f"Connection references unknown zone: {zone2}"
+                    )
 
             pair = self._connection_key(zone1, zone2)
             if pair in seen_connections:

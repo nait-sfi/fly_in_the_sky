@@ -4,7 +4,9 @@
 class Drone:
     """Represents a drone moving through a precomputed path."""
 
-    def __init__(self, drone_id: int, start_zone: str, path: list[str]) -> None:
+    def __init__(
+        self, drone_id: int, start_zone: str, path: list[str]
+         ) -> None:
         """
         Initialize a drone.
 
