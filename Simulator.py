@@ -4,6 +4,7 @@ from Drone import Drone
 from Graph import Graph
 from Pathfinder import Pathfinder
 from Zone import ZoneType
+from Path_not_found_error import PathNotFoundError
 
 
 class Simulator:
@@ -29,7 +30,8 @@ class Simulator:
         self.transit_reservations: dict[str, int] = {}
 
         self._create_drones()
-        self._assign_paths()
+        if not self._assign_paths():
+            raise PathNotFoundError("should be path to all drones to goal")
 
     @staticmethod
     def _connection_key(zone1_name: str, zone2_name: str) -> tuple[str, str]:
@@ -53,14 +55,17 @@ class Simulator:
         """Return whether zone has unlimited occupancy per rules."""
         return zone_name in (self.graph.start_zone, self.graph.end_zone)
 
-    def _assign_paths(self) -> None:
+    def _assign_paths(self) -> bool:
         """Assign paths to all drones and update zone passing costs."""
         for drone in self.drones:
             _, path = self.pathfinder.solve()
+            if len(path) == 1:
+                return False
             pathlen = len(path)
             for zone_name in path:
                 self.graph.zones[zone_name].additional_cost += (0.1 / pathlen)
             drone.assigned_path = path
+        return True
 
     def can_drone_move(self, drone: Drone, next_zone_name: str) -> bool:
         """

@@ -4,6 +4,7 @@ from Graph import Graph
 from Pathfinder import Pathfinder
 from parser import MapParser
 from Simulator import Simulator
+from Path_not_found_error import PathNotFoundError
 
 
 def main() -> None:
@@ -14,7 +15,7 @@ def main() -> None:
         RuntimeError: If map parsing fails.
     """
     parser = MapParser()
-    if not parser.parse_file("./maps/hard/01_maze_nightmare.txt"):
+    if not parser.parse_file("./maps/easy/03_basic_capacity.txt"):
         raise RuntimeError("\n".join(parser.get_errors()))
 
     graph = Graph()
@@ -23,11 +24,15 @@ def main() -> None:
     pathfinder = Pathfinder(graph)
     if parser.nb_drones is None:
         raise RuntimeError("nb_drones was not set after parsing")
-    simulation = Simulator(graph, parser.nb_drones, pathfinder)
-    simulation.run()
-    print(len(simulation.output))
-    # for input in simulation.output:
-    #     print(input)
+    try:
+        simulation = Simulator(graph, parser.nb_drones, pathfinder)
+        simulation.run()
+        print(len(simulation.output))
+        for input in simulation.output:
+            print(input)
+    except PathNotFoundError as e:
+        print(e)
+    
 
 
 if __name__ == "__main__":

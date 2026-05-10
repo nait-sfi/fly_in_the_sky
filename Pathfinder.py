@@ -59,5 +59,6 @@ class Pathfinder:
                     heapq.heappush(
                         heap, (distances[neighbor.name], neighbor.name)
                         )
-
-        return distances[self.end_zone], paths.get(self.end_zone, [])
+        path = paths.get(self.end_zone, [])
+        distance = distances[self.end_zone]
+        return distance, path
