@@ -210,4 +210,5 @@ RICH_COLORS = {
     "maroon": "#800000",
     "crimson": "#DC143C",
     "rainbow": "rainbow",
+    "lime": "#00FF00"
 }

@@ -253,8 +253,8 @@ class Simulator:
             for token_part in token_parts:
                 if start:
                     drone_index = int(token_part[1:]) - 1
-                    if drone := self.drones[drone_index]:
-                        drone_color = drone.color
+                    drone = self.drones[drone_index]
+                    drone_color = drone.color
                     colored_token += \
                         f"[{drone_color}]{token_part}[/{drone_color}]"
                     start = False
@@ -283,3 +283,6 @@ class Simulator:
         for line in self.output:
             line = self._color_line(line)
             print(line)
+
+    def get_number_truns(self) -> int:
+        return len(self.output)
