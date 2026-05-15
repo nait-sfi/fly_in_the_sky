@@ -6,6 +6,7 @@ from Pathfinder import Pathfinder
 from Zone import ZoneType
 from Path_not_found_error import PathNotFoundError
 from Colors import RICH_COLORS
+from rich import print
 
 
 class Simulator:
@@ -48,9 +49,9 @@ class Simulator:
         start_zone = self.graph.get_zone(self.graph.start_zone)
         for drone_id in range(1, self.num_drones + 1):
             drone_color = ""
-            for index, color in enumerate(RICH_COLORS.values()):
+            for index, color_name in enumerate(RICH_COLORS.keys()):
                 if index == drone_id:
-                    drone_color = color
+                    drone_color = RICH_COLORS[color_name]
             drone = Drone(drone_id, self.graph.start_zone, [], drone_color)
             self.drones.append(drone)
             if start_zone is not None:
@@ -242,7 +243,26 @@ class Simulator:
 
         return self.turn
 
+    def _color_line(self, line: str) -> str:
+        line_tokens = line.split()
+        colored_line = []
+        for token in line_tokens:
+            token_parts = token.split('-')
+            colored_token = ""
+            for token_part in token_parts:
+                if token_part.startswith("D"):
+                    drone_color = self.drones[(int(token_part[-1]) - 1)].color
+                    colored_token += \
+                        f"[{drone_color}]{token_part}[/{drone_color}]"
+                else:
+                    zone_color = self.graph.zones[token_part].color
+                    colored_token += \
+                        f"-[{zone_color}]{token_part}[/{zone_color}]"
+            colored_line.append(colored_token)
+        return " ".join(colored_line)
+
     def print_results(self) -> None:
         """Print simulation results."""
         for line in self.output:
+            line = self._color_line(line)
             print(line)

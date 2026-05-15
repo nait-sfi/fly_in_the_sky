@@ -5,7 +5,7 @@ class Drone:
     """Represents a drone moving through a precomputed path."""
 
     def __init__(
-        self, drone_id: int, start_zone: str, path: list[str], colro: str
+        self, drone_id: int, start_zone: str, path: list[str], color: str
          ) -> None:
         """
         Initialize a drone.
@@ -16,7 +16,7 @@ class Drone:
             path: Assigned path as an ordered list of zone names.
         """
         self.id = drone_id
-        self.color = ""
+        self.color = color
         self.current_zone = start_zone
         self.assigned_path = path
         self.path_index = 0

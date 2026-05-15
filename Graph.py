@@ -114,7 +114,8 @@ class Graph:
                         self.string_to_zone_type(
                             (hub_metadata.get('zone', 'normal')
                              )),
-                        hub_metadata.get('max_drones', 1))
+                        hub_metadata.get('max_drones', 1),
+                        hub_metadata['color'])
             self.zones[hub] = zone
 
         self.start_zone = parser.start_hub
