@@ -249,11 +249,15 @@ class Simulator:
         for token in line_tokens:
             token_parts = token.split('-')
             colored_token = ""
+            start = True
             for token_part in token_parts:
-                if token_part.startswith("D"):
-                    drone_color = self.drones[(int(token_part[-1]) - 1)].color
+                if start:
+                    drone_index = int(token_part[1:]) - 1
+                    if drone := self.drones[drone_index]:
+                        drone_color = drone.color
                     colored_token += \
                         f"[{drone_color}]{token_part}[/{drone_color}]"
+                    start = False
                 else:
                     zone = self.graph.zones[token_part]
                     zone_color = zone.color
@@ -265,7 +269,8 @@ class Simulator:
                             ]
                         colored_token = "-"
                         for i, char in enumerate(zone.name):
-                            color = rainbow_sequence[i % len(rainbow_sequence)]
+                            zone_len = len(rainbow_sequence)
+                            color = rainbow_sequence[i % zone_len]
                             colored_token += f"[{color}]{char}[/{color}]"
                     else:
                         colored_token += \
