@@ -255,9 +255,21 @@ class Simulator:
                     colored_token += \
                         f"[{drone_color}]{token_part}[/{drone_color}]"
                 else:
-                    zone_color = self.graph.zones[token_part].color
-                    colored_token += \
-                        f"-[{zone_color}]{token_part}[/{zone_color}]"
+                    zone = self.graph.zones[token_part]
+                    zone_color = zone.color
+                    if zone_color == "rainbow":
+                        rainbow_sequence = [
+                            "red", "orange1",
+                            "yellow", "green",
+                            "blue", "purple"
+                            ]
+                        colored_token = "-"
+                        for i, char in enumerate(zone.name):
+                            color = rainbow_sequence[i % len(rainbow_sequence)]
+                            colored_token += f"[{color}]{char}[/{color}]"
+                    else:
+                        colored_token += \
+                            f"-[{zone_color}]{token_part}[/{zone_color}]"
             colored_line.append(colored_token)
         return " ".join(colored_line)
 
