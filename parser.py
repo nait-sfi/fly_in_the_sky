@@ -1,6 +1,7 @@
 """Parser for map definition files used by the simulator."""
 
 from typing import Any
+from Colors import RICH_COLORS
 
 
 class MapParser:
@@ -182,6 +183,9 @@ class MapParser:
         metadata = self.extract_metadata(content)
         zone_type = metadata.get("zone", "normal")
         metadata["color"] = metadata.get("color", None)
+        if metadata['color'] is not None and \
+                metadata['color'] not in RICH_COLORS:
+            raise ValueError("The color you provide is anknown!!")
         metadata["max_drones"] = metadata.get("max_drones", 1)
 
         valid_types = ["normal", "blocked", "restricted", "priority"]

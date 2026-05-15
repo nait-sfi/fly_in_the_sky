@@ -14,21 +14,24 @@ def main() -> None:
     Raises:
         RuntimeError: If map parsing fails.
     """
-    parser = MapParser()
-    if not parser.parse_file("./maps/easy/03_basic_capacity.txt"):
-        raise RuntimeError("\n".join(parser.get_errors()))
-
-    graph = Graph()
-    graph.build_from_parser(parser)
-
-    pathfinder = Pathfinder(graph)
-    if parser.nb_drones is None:
-        raise RuntimeError("nb_drones was not set after parsing")
     try:
-        simulation = Simulator(graph, parser.nb_drones, pathfinder)
-        simulation.run()
-        simulation.print_results()
-    except PathNotFoundError as e:
+        parser = MapParser()
+        if not parser.parse_file("./maps/easy/03_basic_capacity.txt"):
+            raise RuntimeError("\n".join(parser.get_errors()))
+
+        graph = Graph()
+        graph.build_from_parser(parser)
+
+        pathfinder = Pathfinder(graph)
+        if parser.nb_drones is None:
+            raise RuntimeError("nb_drones was not set after parsing")
+        try:
+            simulation = Simulator(graph, parser.nb_drones, pathfinder)
+            simulation.run()
+            simulation.print_results()
+        except PathNotFoundError as e:
+            print(e)
+    except Exception as e:
         print(e)
 
 
