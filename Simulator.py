@@ -5,6 +5,7 @@ from Graph import Graph
 from Pathfinder import Pathfinder
 from Zone import ZoneType
 from Path_not_found_error import PathNotFoundError
+from Colors import RICH_COLORS
 
 
 class Simulator:
@@ -46,7 +47,11 @@ class Simulator:
         """Create all drones at the start position."""
         start_zone = self.graph.get_zone(self.graph.start_zone)
         for drone_id in range(1, self.num_drones + 1):
-            drone = Drone(drone_id, self.graph.start_zone, [])
+            drone_color = ""
+            for index, color in enumerate(RICH_COLORS.values()):
+                if index == drone_id:
+                    drone_color = color
+            drone = Drone(drone_id, self.graph.start_zone, [], drone_color)
             self.drones.append(drone)
             if start_zone is not None:
                 start_zone.current_drones.add(drone.id)
