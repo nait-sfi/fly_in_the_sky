@@ -183,9 +183,14 @@ class MapParser:
         metadata = self.extract_metadata(content)
         zone_type = metadata.get("zone", "normal")
         metadata["color"] = metadata.get("color", None)
-        if metadata['color'] is not None and \
-                metadata['color'] not in RICH_COLORS:
-            raise ValueError("The color you provide is anknown!!")
+        if metadata['color'] is None:
+            metadata['color'] = "white"
+        if metadata['color'] in RICH_COLORS:
+            metadata["color"] = RICH_COLORS[metadata['color']]
+        else:
+            raise ValueError(
+                f"The color [{metadata['color']}] you provide is anknown!!"
+                )
         metadata["max_drones"] = metadata.get("max_drones", 1)
 
         valid_types = ["normal", "blocked", "restricted", "priority"]

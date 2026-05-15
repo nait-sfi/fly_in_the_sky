@@ -16,7 +16,9 @@ def main() -> None:
     """
     try:
         parser = MapParser()
-        if not parser.parse_file("./maps/easy/03_basic_capacity.txt"):
+        if not parser.parse_file(
+            "maps/challenger/01_the_impossible_dream.txt"
+             ):
             raise RuntimeError("\n".join(parser.get_errors()))
 
         graph = Graph()
