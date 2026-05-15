@@ -27,12 +27,9 @@ def main() -> None:
     try:
         simulation = Simulator(graph, parser.nb_drones, pathfinder)
         simulation.run()
-        print(len(simulation.output))
-        for input in simulation.output:
-            print(input)
+        simulation.print_results()
     except PathNotFoundError as e:
         print(e)
-    
 
 
 if __name__ == "__main__":
