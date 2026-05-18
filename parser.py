@@ -174,8 +174,8 @@ class MapParser:
         try:
             x = int(parts[1])
             y = int(parts[2])
-        except ValueError as exc:
-            raise ValueError(f"Coordinates must be integers: {line}") from exc
+        except ValueError:
+            raise ValueError(f"Coordinates must be integers: {line}")
 
         metadata = self.extract_metadata(content)
         zone_type = metadata.get("zone", "normal")
