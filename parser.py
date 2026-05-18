@@ -54,15 +54,15 @@ class MapParser:
         """
         try:
             first_content_seen = False
-            with open(filename, "r", encoding="utf-8") as file:
+            with open(filename, "r") as file:
                 for line_num, line in enumerate(file, 1):
-                    stripped = self._strip_comments(line)
-                    if not stripped:
+                    line = self._strip_comments(line)
+                    if not line:
                         continue
 
                     if not first_content_seen:
                         first_content_seen = True
-                        if not stripped.startswith("nb_drones:"):
+                        if not line.startswith("nb_drones"):
                             self.errors.append(
                                 f"Line {line_num}:" +
                                 " First non-comment line must be "
@@ -70,7 +70,7 @@ class MapParser:
                             )
                             return False
                     try:
-                        self.parse_line(stripped)
+                        self.parse_line(line)
                     except Exception as exc:
                         self.errors.append(f"Line {line_num}: {exc}")
                         return False
@@ -98,16 +98,13 @@ class MapParser:
         Returns:
             True if the line contains parsed content, otherwise False.
         """
-        stripped = self._strip_comments(line)
-        if not stripped or stripped.startswith("#"):
-            return False
-        if stripped.startswith("nb_drones:"):
-            return self.parse_nb_drones(stripped)
-        if stripped.startswith(("start_hub:", "end_hub:", "hub:")):
-            return self.parse_hub(stripped)
-        if stripped.startswith("connection:"):
-            return self.parse_connection(stripped)
-        raise ValueError(f"Unknown line format: {stripped}")
+        if line.startswith("nb_drones"):
+            return self.parse_nb_drones(line)
+        if line.startswith(("start_hub", "end_hub", "hub")):
+            return self.parse_hub(line)
+        if line.startswith("connection"):
+            return self.parse_connection(line)
+        raise ValueError(f"Unknown line format: {line}")
 
     def parse_nb_drones(self, line: str) -> bool:
         """
@@ -123,7 +120,7 @@ class MapParser:
             ValueError: If the declaration format or value is invalid.
         """
         if ":" not in line:
-            raise ValueError(f"Invalid hub line (no colon): {line}")
+            raise ValueError(f"Invalid nb_drones line (no colon): {line}")
 
         _, content = line.split(":", 1)
         content = content.strip()
@@ -133,9 +130,9 @@ class MapParser:
 
         try:
             value = int(content)
-        except ValueError as exc:
+        except ValueError:
             raise ValueError(
-                f"Expected number drones to be an int: {content}") from exc
+                f"Expected number drones to be an int: {content}")
 
         if value <= 0:
             raise ValueError(

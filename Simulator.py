@@ -244,6 +244,14 @@ class Simulator:
         return self.turn
 
     def _color_line(self, line: str) -> str:
+        """add color to each drone zone
+
+        Args:
+            line (str): uncolored line
+
+        Returns:
+            str: colored line
+        """
         line_tokens = line.split()
         colored_line = []
         for token in line_tokens:
@@ -267,7 +275,7 @@ class Simulator:
                             "yellow", "green",
                             "blue", "purple"
                             ]
-                        colored_token = "-"
+                        colored_token += "-"
                         for i, char in enumerate(zone.name):
                             zone_len = len(rainbow_sequence)
                             color = rainbow_sequence[i % zone_len]
@@ -280,9 +288,12 @@ class Simulator:
 
     def print_results(self) -> None:
         """Print simulation results."""
+        count = 0
         for line in self.output:
             line = self._color_line(line)
             print(line)
+            count += 1
+        print(f"count {count}")
 
     def get_number_truns(self) -> int:
         return len(self.output)
