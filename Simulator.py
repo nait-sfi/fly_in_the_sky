@@ -288,12 +288,14 @@ class Simulator:
 
     def print_results(self) -> None:
         """Print simulation results."""
-        count = 0
         for line in self.output:
             line = self._color_line(line)
             print(line)
-            count += 1
-        print(f"count {count}")
 
     def get_number_truns(self) -> int:
+        """get the turns number
+
+        Returns:
+            int: turns number
+        """
         return len(self.output)

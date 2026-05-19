@@ -42,7 +42,6 @@ def main() -> None:
                 simulation = Simulator(graph, parser.nb_drones, pathfinder)
                 simulation.run()
                 simulation.print_results()
-                print(simulation.get_number_truns())
             except PathNotFoundError as e:
                 print(e)
         except Exception as e:
