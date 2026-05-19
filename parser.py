@@ -202,8 +202,8 @@ class MapParser:
             case "start_hub":
                 if self.start_hub:
                     raise ValueError(
-                        "Duplicate start_hub declaration: " +
-                        f"'{self.start_hub}' and '{name}'"
+                        "Duplicate start_hub declaration: "
+                        + f"'{self.start_hub}' and '{name}'"
                     )
                 self.start_hub = name
             case "end_hub":
@@ -283,6 +283,14 @@ class MapParser:
 
         start = text.index("[")
         end = text.index("]")
+        if start > end:
+            raise ValueError("The metadata brackets are reversed: ][")
+
+        if text[end + 1:].strip():
+            raise ValueError(
+                f"The metadata should be the last thing in the line: {text}"
+            )
+
         metadata_str = text[start + 1:end].strip()
         if not metadata_str:
             return {}
@@ -324,11 +332,11 @@ class MapParser:
                     raise ValueError(
                         f"max_link_capacity must be positive, got: {val}"
                         )
-            except ValueError as exc:
+            except ValueError:
                 raise ValueError(
                     "max_link_capacity must be an integer, got:"
                     f" {metadata['max_link_capacity']}"
-                ) from exc
+                )
             metadata["max_link_capacity"] = val
 
         return metadata
