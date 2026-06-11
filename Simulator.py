@@ -50,7 +50,7 @@ class Simulator:
         for drone_id in range(1, self.num_drones + 1):
             drone_color = ""
             for index, color_name in enumerate(RICH_COLORS.keys()):
-                if index == drone_id:
+                if index == drone_id % len(RICH_COLORS):
                     drone_color = RICH_COLORS[color_name]
             drone = Drone(drone_id, self.graph.start_zone, [], drone_color)
             self.drones.append(drone)
