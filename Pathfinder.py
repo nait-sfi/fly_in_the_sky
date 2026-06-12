@@ -38,7 +38,7 @@ class Pathfinder:
         heapq.heappush(heap, (0, 0, self.start_zone))
         distances[self.start_zone] = 0
         while heap:
-            _, _, node = heapq.heappop(heap)
+            _, p, node = heapq.heappop(heap)
 
             if node in visited:
                 continue
@@ -61,7 +61,7 @@ class Pathfinder:
                         heap,
                         (
                             distances[neighbor.name],
-                            int(not neighbor.zone_type.is_priority),
+                            int(not neighbor.zone_type.is_priority) + p,
                             neighbor.name,
                         ),
                     )
